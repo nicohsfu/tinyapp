@@ -21,6 +21,12 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+app.get("/urls/:id", (req, res) => {
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]/* <- What goes here? */ };
+  res.render("urls_show", templateVars);
+});
+// ^ to test: http://localhost:8080/urls/b2xVn2
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
