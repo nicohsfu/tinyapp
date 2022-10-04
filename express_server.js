@@ -47,6 +47,15 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+app.post("/urls/:id", (req, res) => {
+  let shortId = req.params.id; // if the info is coming from the URL
+  let longURL = req.body.longURL; // if the info is coming from the input form
+
+  urlDatabase[shortId] = longURL;
+
+  res.redirect("/urls/");
+});
+
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]/* <- What goes here? */ };
   res.render("urls_show", templateVars);
