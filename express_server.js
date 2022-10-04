@@ -35,6 +35,14 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+app.post("/urls/:id/delete", (req, res) => {
+  const id = req.params.id;
+
+  delete urlDatabase[id];
+
+  res.redirect("/urls/");
+});
+
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
