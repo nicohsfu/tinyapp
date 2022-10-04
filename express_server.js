@@ -8,7 +8,7 @@ function generateRandomString() {
   let lettersAndNumArr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
   for (let i = 0; i < 6; i++) {
-    let randomLetter = lettersAndNumArr[Math.floor(Math.random() * 35)];
+    let randomLetter = lettersAndNumArr[Math.floor(Math.random() * 61)];
     strOutput += randomLetter;
   }
 
@@ -45,6 +45,12 @@ app.get("/urls/:id", (req, res) => {
 });
 // ^ to test: http://localhost:8080/urls/b2xVn2
 
+app.get("/u/:id", (req, res) => {
+  let shortId = req.params.id;
+  const longURL = urlDatabase[shortId];
+  res.redirect(longURL);
+});
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -54,9 +60,19 @@ app.get("/hello", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  // generateRandomString goes here
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  console.log("req.body: ", req.body); // Log the POST request body to the console
+
+  let shortURL = generateRandomString();
+  // console.log("req.body.longURL: ", req.body.longURL); // test
+  urlDatabase[shortURL] = req.body.longURL; // assign user-inputted longURL to a generated shortURL
+
+  // console.log("urlDatabase :", urlDatabase); // test
+  // res.send("Ok"); // Respond with 'Ok' (we will replace this)
+
+  res.redirect(`/urls/${shortURL}`);
+  // res.redirect(`/u/${shortURL}`);
+
+  // res.redirect(`/u/:id`); // wrong implementation as per mentor
 });
 
 app.listen(PORT, () => {
