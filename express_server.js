@@ -184,10 +184,7 @@ app.post("/urls", (req, res) => {
   // assign user-inputted longURL to a generated shortURL
   urlDatabase[shortURL] = req.body.longURL;
 
-  // console.log("urlDatabase :", urlDatabase); // test
-
   res.redirect(`/urls/${shortURL}`);
-  // res.redirect(`/u/${shortURL}`);
 });
 
 app.listen(PORT, () => {
