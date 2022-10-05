@@ -18,7 +18,7 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-    <% if(!username){ %>
+    <% if(!userInfo){ %>
       <div>
         <form method="GET" action="/register">
           <button type="submit">Register</button>
@@ -32,7 +32,7 @@
       <% } else { %>
         <div>
         <form method="POST" action="/logout">
-          Logged in as: <%= username.email %>   
+          Logged in as: <%= userInfo.email %>   
           <button type="submit">Log Out</button>
         </form>   
       </div>

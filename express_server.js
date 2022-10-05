@@ -58,7 +58,7 @@ const findUserByEmail = (email) => {
 
 app.get("/login", (req, res) => {
   const templateVars = {
-    username: users[req.cookies["user_id"]]
+    userInfo: users[req.cookies["user_id"]]
   };
 
   res.render("login", templateVars);
@@ -66,7 +66,21 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   const email = req.body.email; // from the input form
+
+  const user = findUserByEmail(req.body.email);
+
+  if (!user) {
+    return res.status(403).send('email cannot be found');
+  }
+
+  if (user) {
+    if (users[user].password !== req.body.password) {
+      return res.status(403).send('incorrect password!');
+    }
+  }
+
   res.cookie("user_id", findUserByEmail(email));
+
   res.redirect("/urls/");
 });
 
@@ -82,7 +96,7 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-    username: users[req.cookies["user_id"]]
+    userInfo: users[req.cookies["user_id"]]
   };
 
   // structure is: res.render(ejsTemplateName, variablesInsideEjsTemplate)
@@ -96,7 +110,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = { username: users[req.cookies["user_id"]] };
+  const templateVars = { userInfo: users[req.cookies["user_id"]] };
   res.render("register", templateVars);
 });
 
@@ -128,12 +142,12 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: users[req.cookies["user_id"]] };
+  const templateVars = { userInfo: users[req.cookies["user_id"]] };
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], username: users[req.cookies["user_id"]] };
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], userInfo: users[req.cookies["user_id"]] };
   res.render("urls_show", templateVars);
 });
 // ^ to test: http://localhost:8080/urls/b2xVn2
