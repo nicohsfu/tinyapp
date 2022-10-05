@@ -49,16 +49,24 @@ const findUserByEmail = (email) => {
 
     if (userFromDb.email === email) {
       // we found our user
-      return userFromDb;
+      return userId;
     }
   }
 
   return null;
 };
 
+app.get("/login", (req, res) => {
+  const templateVars = {
+    username: users[req.cookies["user_id"]]
+  };
+
+  res.render("login", templateVars);
+});
+
 app.post("/login", (req, res) => {
-  const username = req.body.username; // from the input form
-  res.cookie("username", username);
+  const email = req.body.email; // from the input form
+  res.cookie("user_id", findUserByEmail(email));
   res.redirect("/urls/");
 });
 
