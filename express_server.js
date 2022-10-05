@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require('morgan');
+const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -19,6 +20,8 @@ app.set("view engine", "ejs");
 
 app.use(morgan('dev'));
 
+app.use(cookieParser());
+
 app.use(express.urlencoded({ extended: true }));
 
 const urlDatabase = {
@@ -26,25 +29,39 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+app.post("/login", (req, res) => {
+  const username = req.body.username; // from the input form
+  res.cookie("username", username);
+  res.redirect("/urls/");
+});
+
+app.post("/logout", (req, res) => {
+  const username = req.body.username; 
+  res.clearCookie("username", username);
+  res.redirect("/urls/");
+});
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
-
   delete urlDatabase[id];
-
   res.redirect("/urls/");
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { username: req.cookies["username"] };
+  res.render("urls_new", templateVars);
 });
 
 app.post("/urls/:id", (req, res) => {
@@ -57,7 +74,7 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]/* <- What goes here? */ };
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], username: req.cookies["username"] };
   res.render("urls_show", templateVars);
 });
 // ^ to test: http://localhost:8080/urls/b2xVn2
