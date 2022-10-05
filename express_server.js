@@ -18,10 +18,9 @@ function generateRandomString() {
 
 app.set("view engine", "ejs");
 
+// these app.use lines are middlewares
 app.use(morgan('dev'));
-
 app.use(cookieParser());
-
 app.use(express.urlencoded({ extended: true }));
 
 const urlDatabase = {
