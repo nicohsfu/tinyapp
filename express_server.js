@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080; // default port 8080
 
-function generateRandomString() {
+const generateRandomString = function() {
   let strOutput = "";
   let lettersAndNumArr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
@@ -14,14 +14,15 @@ function generateRandomString() {
   }
 
   return strOutput;
-}
+};
 
 app.set("view engine", "ejs");
 
+// these app.use lines are middlewares
 app.use(morgan('dev'));
-
 app.use(cookieParser());
 
+// body parser that's built-in to express
 app.use(express.urlencoded({ extended: true }));
 
 const urlDatabase = {
@@ -42,6 +43,19 @@ const users = {
   },
 };
 
+const findUserByEmail = (email) => {
+  for (const userId in users) {
+    const userFromDb = users[userId];
+
+    if (userFromDb.email === email) {
+      // we found our user
+      return userFromDb;
+    }
+  }
+
+  return null;
+};
+
 app.post("/login", (req, res) => {
   const username = req.body.username; // from the input form
   res.cookie("username", username);
@@ -49,7 +63,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  res.clearCookie("user_id"); //clearCookie("") just takes in 1 argument, the key
   res.redirect("/urls/");
 });
 
@@ -62,6 +76,8 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     username: users[req.cookies["user_id"]]
   };
+
+  // structure is: res.render(ejsTemplateName, variablesInsideEjsTemplate)
   res.render("urls_index", templateVars);
 });
 
@@ -80,13 +96,26 @@ app.post("/register", (req, res) => {
   let userObj = {};
   let userID = generateRandomString();
 
+  if (req.body.email === "" || req.body.password === "") {
+    return res.status(400).send('cannot have an empty email or password');
+  }
+
+  const user = findUserByEmail(req.body.email);
+
+  //check if we found a user
+  if (user) {
+    return res.status(400).send('Email already in use');
+  }
+
   res.cookie("user_id", userID);
-  
+
   userObj.id = userID;
   userObj.email = req.body.email;
   userObj.password = req.body.password;
   users[userID] = userObj;
-  console.log(users);
+
+  console.log("users object: ", users);
+
   res.redirect('/urls');
 });
 
@@ -94,7 +123,6 @@ app.get("/urls/new", (req, res) => {
   const templateVars = { username: users[req.cookies["user_id"]] };
   res.render("urls_new", templateVars);
 });
-
 
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], username: users[req.cookies["user_id"]] };
@@ -130,15 +158,14 @@ app.post("/urls", (req, res) => {
 
   let shortURL = generateRandomString();
   // console.log("req.body.longURL: ", req.body.longURL); // test
-  urlDatabase[shortURL] = req.body.longURL; // assign user-inputted longURL to a generated shortURL
+
+  // assign user-inputted longURL to a generated shortURL
+  urlDatabase[shortURL] = req.body.longURL;
 
   // console.log("urlDatabase :", urlDatabase); // test
-  // res.send("Ok"); // Respond with 'Ok' (we will replace this)
 
   res.redirect(`/urls/${shortURL}`);
   // res.redirect(`/u/${shortURL}`);
-
-  // res.redirect(`/u/:id`); // wrong implementation as per mentor
 });
 
 app.listen(PORT, () => {
