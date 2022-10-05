@@ -61,6 +61,10 @@ app.get("/login", (req, res) => {
     userInfo: users[req.cookies["user_id"]]
   };
 
+  if(req.cookies["user_id"]){
+    return res.redirect("/urls");
+  }
+
   res.render("login", templateVars);
 });
 
@@ -111,6 +115,11 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.get("/register", (req, res) => {
   const templateVars = { userInfo: users[req.cookies["user_id"]] };
+
+  if(req.cookies["user_id"]){
+    return res.redirect("/urls");
+  }
+
   res.render("register", templateVars);
 });
 
