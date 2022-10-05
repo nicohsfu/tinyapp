@@ -25,10 +25,22 @@ app.use(cookieParser());
 // body parser that's built-in to express
 app.use(express.urlencoded({ extended: true }));
 
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
+
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
+
 
 const users = {
   userRandomID: {
@@ -103,6 +115,10 @@ app.get("/urls", (req, res) => {
     userInfo: users[req.cookies["user_id"]]
   };
 
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send('Cannot view "My URLs", you are not logged in');
+  }
+
   // structure is: res.render(ejsTemplateName, variablesInsideEjsTemplate)
   res.render("urls_index", templateVars);
 });
@@ -161,7 +177,11 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], userInfo: users[req.cookies["user_id"]] };
+  const templateVars = {
+    id: req.params.id,
+    longURL: urlDatabase[req.params.id]["longURL"],
+    userInfo: users[req.cookies["user_id"]]
+  };
   res.render("urls_show", templateVars);
 });
 // ^ to test: http://localhost:8080/urls/b2xVn2
@@ -170,7 +190,7 @@ app.post("/urls/:id", (req, res) => {
   let shortId = req.params.id; // if the info is coming from the URL
   let longURL = req.body.longURL; // if the info is coming from the input form
 
-  urlDatabase[shortId] = longURL;
+  urlDatabase[shortId].longURL = req.body.editURL;
 
   res.redirect("/urls/");
 });
@@ -183,7 +203,7 @@ app.get("/u/:id", (req, res) => {
     return res.status(404).send('shortened URL does not exist');
   }
 
-  res.redirect(longURL);
+  res.redirect(longURL['longURL']);
 });
 
 app.get("/urls.json", (req, res) => {
@@ -204,10 +224,12 @@ app.post("/urls", (req, res) => {
     return res.status(401).send('you are not logged in');
   }
 
-  // assign user-inputted longURL to a generated shortURL
-  urlDatabase[shortURL] = req.body.longURL;
+  if (!urlDatabase[shortURL]) {
+    urlDatabase[shortURL] = {};
+  }
 
-  const templateVars = { userInfo: users[req.cookies["user_id"]] };
+  // assign user-inputted longURL to a generated shortURL
+  urlDatabase[shortURL].longURL = req.body.longURL;
 
   res.redirect(`/urls/${shortURL}`);
 });
