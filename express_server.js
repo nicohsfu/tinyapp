@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080; // default port 8080
 
-function generateRandomString() {
+const generateRandomString = function() {
   let strOutput = "";
   let lettersAndNumArr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
@@ -14,7 +14,7 @@ function generateRandomString() {
   }
 
   return strOutput;
-}
+};
 
 app.set("view engine", "ejs");
 
@@ -80,7 +80,7 @@ app.post("/register", (req, res) => {
   let userID = generateRandomString();
 
   res.cookie("user_id", userID);
-  
+
   userObj.id = userID;
   userObj.email = req.body.email;
   userObj.password = req.body.password;
