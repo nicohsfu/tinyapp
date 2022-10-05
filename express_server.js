@@ -49,22 +49,13 @@ const findUserByEmail = (email) => {
 
     if (userFromDb.email === email) {
       // we found our user
-<<<<<<< HEAD
-      return userFromDb;
-=======
       return userId;
->>>>>>> feature/user-registration
     }
   }
 
   return null;
 };
 
-<<<<<<< HEAD
-app.post("/login", (req, res) => {
-  const username = req.body.username; // from the input form
-  res.cookie("username", username);
-=======
 app.get("/login", (req, res) => {
   const templateVars = {
     userInfo: users[req.cookies["user_id"]]
@@ -90,7 +81,6 @@ app.post("/login", (req, res) => {
 
   res.cookie("user_id", findUserByEmail(email));
 
->>>>>>> feature/user-registration
   res.redirect("/urls/");
 });
 
@@ -106,11 +96,7 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-<<<<<<< HEAD
-    username: users[req.cookies["user_id"]]
-=======
     userInfo: users[req.cookies["user_id"]]
->>>>>>> feature/user-registration
   };
 
   // structure is: res.render(ejsTemplateName, variablesInsideEjsTemplate)
@@ -124,11 +110,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-<<<<<<< HEAD
-  const templateVars = { username: users[req.cookies["user_id"]] };
-=======
   const templateVars = { userInfo: users[req.cookies["user_id"]] };
->>>>>>> feature/user-registration
   res.render("register", templateVars);
 });
 
@@ -160,20 +142,12 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-<<<<<<< HEAD
-  const templateVars = { username: users[req.cookies["user_id"]] };
-=======
   const templateVars = { userInfo: users[req.cookies["user_id"]] };
->>>>>>> feature/user-registration
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-<<<<<<< HEAD
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], username: users[req.cookies["user_id"]] };
-=======
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], userInfo: users[req.cookies["user_id"]] };
->>>>>>> feature/user-registration
   res.render("urls_show", templateVars);
 });
 // ^ to test: http://localhost:8080/urls/b2xVn2
@@ -218,8 +192,4 @@ app.post("/urls", (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> feature/user-registration
