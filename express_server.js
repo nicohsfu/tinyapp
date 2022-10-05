@@ -36,7 +36,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  const username = req.body.username; 
+  const username = req.body.username;
   res.clearCookie("username", username);
   res.redirect("/urls/");
 });
@@ -57,6 +57,11 @@ app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
   delete urlDatabase[id];
   res.redirect("/urls/");
+});
+
+app.get("/register", (req, res) => {
+  const templateVars = { username: req.cookies["username"] };
+  res.render("register", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
