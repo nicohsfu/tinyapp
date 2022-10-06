@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require('morgan');
 const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -53,7 +54,6 @@ const urlDatabase = {
   },
 };
 
-
 const users = {
   userRandomID: {
     id: "userRandomID",
@@ -102,7 +102,11 @@ app.post("/login", (req, res) => {
   }
 
   if (user) {
-    if (users[user].password !== req.body.password) {
+    const password = req.body.password;
+    const hashedPassword = users[user].password;
+
+    if (!bcrypt.compareSync(password, hashedPassword)) {
+      // console.log(hashedPassword); test
       return res.status(403).send('incorrect password!');
     }
   }
@@ -208,7 +212,12 @@ app.post("/register", (req, res) => {
 
   userObj.id = userID;
   userObj.email = req.body.email;
-  userObj.password = req.body.password;
+
+  // userObj.password = req.body.password; // old
+  const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  userObj.password = hashedPassword;
+
   users[userID] = userObj;
 
   console.log("users object: ", users);
