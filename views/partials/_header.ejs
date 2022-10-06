@@ -23,10 +23,12 @@
         </form>
       </div>
       <% } else { %>
+        <div style="color: white">
+          Logged in as: <%= userInfo.email %> &nbsp;
+        </div>
         <div>
           <form method="POST" action="/logout">
-            Logged in as: <%= userInfo.email %>
-              <button type="submit">Log Out</button>
+            <button type="submit">Log Out</button>
           </form>
         </div>
         <% } %>
