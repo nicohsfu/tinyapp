@@ -16,6 +16,18 @@ const generateRandomString = function() {
   return strOutput;
 };
 
+const urlsForUser = function(id) {
+  let outputObj = {};
+
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      outputObj[shortURL] = urlDatabase[shortURL];
+    }
+  }
+
+  return outputObj;
+};
+
 app.set("view engine", "ejs");
 
 // these app.use lines are middlewares
@@ -111,7 +123,8 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = {
-    urls: urlDatabase,
+    urls: urlsForUser(req.cookies["user_id"]),
+    // urls: urlDatabase,
     userInfo: users[req.cookies["user_id"]]
   };
 
@@ -177,11 +190,23 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  const specificURL = urlsForUser(req.cookies["user_id"]);
+
+  if (!req.cookies["user_id"]) {
+    res.status(401).send("not logged in!");
+  }
+
+      // not falsey 
+  if (!specificURL[req.params.id]) {
+    return res.status(401).send("cannot access these URLs!");
+  }
+
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id]["longURL"],
     userInfo: users[req.cookies["user_id"]]
   };
+
   res.render("urls_show", templateVars);
 });
 // ^ to test: http://localhost:8080/urls/b2xVn2
@@ -228,8 +253,8 @@ app.post("/urls", (req, res) => {
     urlDatabase[shortURL] = {};
   }
 
-  // assign user-inputted longURL to a generated shortURL
   urlDatabase[shortURL].longURL = req.body.longURL;
+  urlDatabase[shortURL].userID = req.cookies["user_id"];
 
   res.redirect(`/urls/${shortURL}`);
 });
