@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require('morgan');
-const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
+const cookieSession = require('cookie-session');
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -33,7 +33,11 @@ app.set("view engine", "ejs");
 
 // these app.use lines are middlewares
 app.use(morgan('dev'));
-app.use(cookieParser());
+// app.use(cookieParser());
+app.use(cookieSession({
+  name: 'tinyapp',
+  keys: ['secret']
+}));
 
 // body parser that's built-in to express
 app.use(express.urlencoded({ extended: true }));
@@ -111,13 +115,16 @@ app.post("/login", (req, res) => {
     }
   }
 
-  res.cookie("user_id", findUserByEmail(email));
+  // res.cookie("user_id", findUserByEmail(email));
+  req.session.user_id = findUserByEmail(email);
 
   res.redirect("/urls/");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id"); //clearCookie("") just takes in 1 argument, the key
+  // res.clearCookie("user_id"); //clearCookie("") just takes in 1 argument, the key
+  req.session = null;
+
   // res.redirect("/urls/"); // this is the original redirect
   res.redirect("/login/");
 });
@@ -129,6 +136,7 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlsForUser(req.cookies["user_id"]),
+    
     // urls: urlDatabase,
     userInfo: users[req.cookies["user_id"]]
   };
@@ -208,7 +216,8 @@ app.post("/register", (req, res) => {
     return res.status(400).send('Email already in use');
   }
 
-  res.cookie("user_id", userID);
+  // res.cookie("user_id", userID);
+  req.session.user_id = userID;
 
   userObj.id = userID;
   userObj.email = req.body.email;
