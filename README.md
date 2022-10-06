@@ -1,10 +1,23 @@
-# TinyApp Project
+# TinyApp Project - by Nico Hernandez
 
 TinyApp is a full stack web application built with Node and Express that allows users to shorten long URLs (à la bit.ly).
 
 ## Final Product
 
-!["screenshot description"](https://github.com/lighthouse-labs/tinyapp/blob/master/docs/urls-page.png)
+"URLs" page
+
+!["screenshot description"](https://github.com/nicohsfu/tinyapp/blob/master/docs/views-urls-page.png?raw=true)
+
+
+"Edit specific URL" page 
+
+!["screenshot description"](https://github.com/nicohsfu/tinyapp/blob/master/docs/edit-url-page.png?raw=true)
+
+
+"Create new URL" page
+
+!["screenshot description"](https://github.com/nicohsfu/tinyapp/blob/master/docs/create-url-page.png?raw=true)
+
 
 ## Dependencies
 
