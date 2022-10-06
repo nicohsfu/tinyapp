@@ -136,8 +136,44 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.post("/urls/:id/delete", (req, res) => {
+app.get("/urls/:id/delete", (req, res) => {
+  const specificURL = urlsForUser(req.cookies["user_id"]);
+
   const id = req.params.id;
+
+  if (!urlDatabase[id]) {
+    return res.status(401).send("id doesn't exist");
+  }
+
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send("you're not logged in");
+  }
+
+  if (!specificURL[id]) {
+    return res.status(401).send("unauthorized to delete");
+  }
+
+  delete urlDatabase[id];
+  res.redirect("/urls/");
+});
+
+app.post("/urls/:id/delete", (req, res) => {
+  const specificURL = urlsForUser(req.cookies["user_id"]);
+
+  const id = req.params.id;
+
+  if (!urlDatabase[id]) {
+    return res.status(401).send("id doesn't exist");
+  }
+
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send("you're not logged in");
+  }
+
+  if (!specificURL[id]) {
+    return res.status(401).send("unauthorized to delete");
+  }
+
   delete urlDatabase[id];
   res.redirect("/urls/");
 });
@@ -196,7 +232,7 @@ app.get("/urls/:id", (req, res) => {
     res.status(401).send("not logged in!");
   }
 
-      // not falsey 
+  // not falsey 
   if (!specificURL[req.params.id]) {
     return res.status(401).send("cannot access these URLs!");
   }
