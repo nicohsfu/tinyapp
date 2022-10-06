@@ -150,7 +150,7 @@ app.get("/urls/:id/delete", (req, res) => {
   }
 
   if (!specificURL[id]) {
-    return res.status(401).send("unauthorized to delete");
+    return res.status(401).send("unauthorized to delete, this is not your short URL");
   }
 
   delete urlDatabase[id];
@@ -171,7 +171,7 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 
   if (!specificURL[id]) {
-    return res.status(401).send("unauthorized to delete");
+    return res.status(401).send("unauthorized to delete, this is not your short URL");
   }
 
   delete urlDatabase[id];
@@ -228,8 +228,18 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const specificURL = urlsForUser(req.cookies["user_id"]);
 
+  const id = req.params.id;
+
+  if (!urlDatabase[id]) {
+    return res.status(401).send("id doesn't exist");
+  }
+
   if (!req.cookies["user_id"]) {
-    res.status(401).send("not logged in!");
+    return res.status(401).send("you're not logged in");
+  }
+
+  if (!specificURL[id]) {
+    return res.status(401).send("unauthorized to edit, this is not your short URL");
   }
 
   // not falsey 
@@ -250,6 +260,22 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   let shortId = req.params.id; // if the info is coming from the URL
   let longURL = req.body.longURL; // if the info is coming from the input form
+
+  const specificURL = urlsForUser(req.cookies["user_id"]);
+
+  const id = req.params.id;
+
+  if (!urlDatabase[id]) {
+    return res.status(401).send("id doesn't exist");
+  }
+
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send("you're not logged in");
+  }
+
+  if (!specificURL[id]) {
+    return res.status(401).send("unauthorized to edit, this is not your short URL");
+  }
 
   urlDatabase[shortId].longURL = req.body.editURL;
 
