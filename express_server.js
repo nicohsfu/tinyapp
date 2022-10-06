@@ -114,7 +114,8 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id"); //clearCookie("") just takes in 1 argument, the key
-  res.redirect("/urls/");
+  // res.redirect("/urls/"); // this is the original redirect
+  res.redirect("/login/");
 });
 
 app.get("/", (req, res) => {
