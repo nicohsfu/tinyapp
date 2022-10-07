@@ -294,6 +294,10 @@ app.post("/urls", (req, res) => {
     urlDatabase[shortURL] = {};
   }
 
+  if (!req.body.longURL) {
+    return res.status(400).send("Link cannot be empty");
+  }
+
   urlDatabase[shortURL].longURL = req.body.longURL;
   urlDatabase[shortURL].userID = req.session.user_id;
 
